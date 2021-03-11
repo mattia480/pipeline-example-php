@@ -1,5 +1,21 @@
 stages:
-- name: Build and publish image
+- name: Build PHP Application
+  steps:
+  - runScriptConfig:
+      image: php:7.2
+      shellScript: |-
+        apt-get update
+        apt-get install -y --no-install-recommends git zip libsqlite3-dev zlib1g-dev
+        docker-php-ext-install zip
+        curl --silent --show-error https://getcomposer.org/installer | php
+        ./composer.phar install -n --prefer-dist
+        touch storage/testing.sqlite storage/database.sqlite
+        cp .env.testing .env
+        php artisan migrate
+        php artisan migrate --env=testing --database=sqlite_testing --force
+        ./vendor/bin/codecept build
+        ./vendor/bin/codecept run
+- name: Build docker image and publish to registry
   steps:
   - publishImageConfig:
       dockerfilePath: ./Dockerfile
