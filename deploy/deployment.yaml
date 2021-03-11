@@ -2,14 +2,6 @@ kind: Service
 apiVersion: v1
 metadata:
   name: php-example-service
-spec:
-  selector:
-    app: php-example
-  type: NodePort
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
